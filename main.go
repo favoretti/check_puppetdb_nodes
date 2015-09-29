@@ -11,12 +11,11 @@ import (
 var (
 	daysw, daysc int
 	pdbhost      string
+	twarn, tcrit time.Time
 )
 
-func checkNode(node puppetdb.NodeJson) *nagios.NagiosStatus {
+func checkNode(node puppetdb.NodeJson, twarn time.Time, tcrit time.Time) *nagios.NagiosStatus {
 	t, _ := time.Parse(time.RFC3339Nano, node.CatalogTimestamp)
-	twarn := time.Now().AddDate(0, 0, -daysw)
-	tcrit := time.Now().AddDate(0, 0, -daysc)
 
 	if t.Before(tcrit) {
 		return &nagios.NagiosStatus{fmt.Sprintf("Node: %s checked in more than %d days ago: %s.\n", node.Name, daysc, t), nagios.NAGIOS_CRITICAL}
@@ -36,9 +35,11 @@ func main() {
 
 	flag.Parse()
 
+	twarn := time.Now().AddDate(0, 0, -daysw)
+	tcrit := time.Now().AddDate(0, 0, -daysc)
 	statuses := make([]*nagios.NagiosStatus, 0)
-
 	client := puppetdb.NewClient(fmt.Sprintf("http://%s:8080", pdbhost), true)
+
 	nodes, err := client.Nodes()
 	if err != nil {
 		errStatus := &nagios.NagiosStatus{fmt.Sprintf("Couldn't check nodes: %s", err), nagios.NAGIOS_UNKNOWN}
@@ -46,9 +47,9 @@ func main() {
 	}
 
 	for _, node := range nodes {
-		nodeStatus := checkNode(node)
+		nodeStatus := checkNode(node, twarn, tcrit)
 		if nodeStatus.Value != nagios.NAGIOS_OK {
-			statuses = append(statuses, checkNode(node))
+			statuses = append(statuses, nodeStatus)
 		}
 	}
 
