@@ -32,18 +32,19 @@ func checkNode(node puppetdb.NodeJson) *nagios.NagiosStatus {
 
 func main() {
 
-	var pdbhost string
+	var pdbHost, pdbPort string
 
 	flag.IntVar(&daysw, "dw", 2, "Days node hasn't checked in to warn about")
 	flag.IntVar(&daysc, "dc", 4, "Days node hasn't checked in to crit about")
-	flag.StringVar(&pdbhost, "pdbhost", "localhost", "Hostname or IP of puppetdb host")
+	flag.StringVar(&pdbHost, "host", "localhost", "Hostname or IP of puppetdb host")
+    flag.StringVar(&pdbPort, "port", "8080", "Port of puppetdb")
 
 	flag.Parse()
 
 	twarn = time.Now().UTC().AddDate(0, 0, -daysw)
 	tcrit = time.Now().UTC().AddDate(0, 0, -daysc)
 	statuses := []*nagios.NagiosStatus{}
-	client := puppetdb.NewClient(fmt.Sprintf("http://%s:8080", pdbhost), false)
+	client := puppetdb.NewClient(fmt.Sprintf("http://%s:%s", pdbHost, pdbPort), false)
 
 	nodes, err := client.Nodes()
 	if err != nil {
