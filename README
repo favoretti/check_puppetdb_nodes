@@ -1,0 +1,7 @@
+Usage of ./check_puppetdb_nodes:
+  -dc int
+    	Days node hasn't checked in to crit about (default 4)
+  -dw int
+    	Days node hasn't checked in to warn about (default 2)
+  -pdbhost string
+    	Hostname or IP of puppetdb host (default "localhost")
