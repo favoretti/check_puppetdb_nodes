@@ -37,7 +37,7 @@ func main() {
 	flag.IntVar(&daysw, "dw", 2, "Days node hasn't checked in to warn about")
 	flag.IntVar(&daysc, "dc", 4, "Days node hasn't checked in to crit about")
 	flag.StringVar(&pdbHost, "host", "localhost", "Hostname or IP of puppetdb host")
-    flag.StringVar(&pdbPort, "port", "8080", "Port of puppetdb")
+	flag.StringVar(&pdbPort, "port", "8080", "Port of puppetdb")
 
 	flag.Parse()
 
